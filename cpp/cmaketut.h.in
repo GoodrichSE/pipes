@@ -1,0 +1,3 @@
+// Configurations for cmake tutorial
+#define pipes_VERSION_MAJOR @pipes_VERSION_MAJOR@
+#define pipes_VERSION_MINOR @pipes_VERSION_MINOR@
