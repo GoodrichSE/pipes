@@ -1,5 +1,5 @@
 #include<iostream>
-#include<commandLine.h>
+#include<jetson-utils/commandLine.h>
 
 int usage()
 {
@@ -11,9 +11,18 @@ int usage()
 	return 0;
 }
 
+int argoption()
+{
+	printf("Option called.\n");
+
+	return 0;
+
+}
 int main(int argc, char** argv)
 {
 	commandLine cmdl(argc, argv);
+
+	printf("Arg count: %i\n", argc);
 
 	if(cmdl.GetFlag("help"))
 		return usage();
@@ -21,17 +30,10 @@ int main(int argc, char** argv)
 	if(cmdl.argc != 1 && cmdl.argc != 2)
 		return usage();
 
-	if(cmdl.GetFlag == "option")
-		return option;
+	if(cmdl.GetFlag("options"))
+		return argoption();
 
 	printf("Boilerplate called correctly.\n");
-
-	return 0;
-}
-
-int option()
-{
-	printf("Option called.");
 
 	return 0;
 }
