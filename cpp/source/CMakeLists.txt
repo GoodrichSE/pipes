@@ -2,13 +2,20 @@ cmake_minimum_required(VERSION 2.8)
 
 project(pipes) 
 
+# link to linux libraries
+include_directories(/usr/include/gstreamer-1.0 /usr/lib/aarch64-linux-gnu/gstreamer-1.0/include /usr/include/glib-2.0 /usr/include/libxml2 /usr/lib/aarch64-linux-gnu/glib-2.0/include/)
+
+# link to jetson libraries
+include_directories(/usr/local/include/jetson-utils)
+
 find_package(jetson-utils)
 find_package(jetson-inference)
 
 find_package(CUDA)
 
 #cuda_add_executable(pipes boilerplate.cpp)
-add_executable(pipes boilerplate.cpp)
+add_executable(pipes pipes.cpp Camfeed.cpp)
 
-target_link_libraries(pipes jetson-inference)
+target_link_libraries(pipes jetson-inference jetson-utils)
+#target_link_libraries(pipes jetson-inference jetson-utils/commandLine.h)
 
