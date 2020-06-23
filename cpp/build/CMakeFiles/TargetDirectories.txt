@@ -1,3 +1,0 @@
-/home/ape-one/Repos/pipes/cpp/build/CMakeFiles/rebuild_cache.dir
-/home/ape-one/Repos/pipes/cpp/build/CMakeFiles/pipes.dir
-/home/ape-one/Repos/pipes/cpp/build/CMakeFiles/edit_cache.dir
