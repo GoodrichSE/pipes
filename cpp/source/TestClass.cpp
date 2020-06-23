@@ -1,21 +1,21 @@
 //#include<jetson-utils/commandLine.h>
 #include<jetson-utils/gstCamera.h>
-#include"Camfeed.h"
+#include"TestClass.h"
 // Probably need to change cmake settings to get this to link properly
 //#include"commandLine.h"
 //#include<jetson-utils>
 
-//int Camfeed::camfeed( int argc, char** argv )
-Camfeed::Camfeed()
+//int TestClass::camfeed( int argc, char** argv )
+TestClass::TestClass()
 {
-	printf("Camfeed constructed.\n");
+	printf("TestClass constructed.\n");
 }
 
-Camfeed::~Camfeed()
+TestClass::~TestClass()
 {
 }
 
-bool Camfeed::testCall()
+bool TestClass::testCall()
 {
 
 	printf("Function called successfully.\n");

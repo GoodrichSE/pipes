@@ -1,7 +1,8 @@
 #include<iostream>
 #include<jetson-utils/commandLine.h>
+#include<jetson-utils/gstCamera.h>
 //#include"boilerplate.h"
-#include"Camfeed.h"
+#include"TestClass.h"
 //#include"start.h"
 
 using namespace std;
@@ -21,34 +22,34 @@ int main(int argc, char** argv){
 	char* nptr = 0;
 
 	printf("entering main\n");
-//
-//        gstCamera* camera = gstCamera::Create(
-//                        cmdl.GetInt("width", gstCamera::DefaultWidth),
-//                        cmdl.GetInt("height", gstCamera::DefaultHeight),
-//                        cmdl.GetString("camera"));
-//
-//        if(!camera) 
-//        { 
-//                printf("Camfeed: failed to initialize camera.\n"); 
-//                return -1; 
-//        } 
-// 
-//        printf("Camfeed:  successfully initialized camera.\n"); 
-//        printf("    width:  %u\n", camera->GetWidth()); 
-//        printf("   height:  %u\n", camera->GetHeight()); 
-//        printf("    depth:  %u (bpp)\n\n", camera->GetPixelDepth()); 
-// 
-// 
-//        if(!camera->Open()) 
-//        { 
-//                printf("Camfeed: camera failed to open.\n"); 
-//                return -2; 
-//        } 
-//	
-//
-//	Camfeed feed = Camfeed();
-	Camfeed feed;
-//	Camfeed feed();
+
+        gstCamera* camera = gstCamera::Create(
+                        cmdl.GetInt("width", gstCamera::DefaultWidth),
+                        cmdl.GetInt("height", gstCamera::DefaultHeight),
+                        cmdl.GetString("camera"));
+
+        if(!camera) 
+        { 
+                printf("TestClass: failed to initialize camera.\n"); 
+                return -1; 
+        } 
+ 
+        printf("TestClass:  successfully initialized camera.\n"); 
+        printf("    width:  %u\n", camera->GetWidth()); 
+        printf("   height:  %u\n", camera->GetHeight()); 
+        printf("    depth:  %u (bpp)\n\n", camera->GetPixelDepth()); 
+ 
+ 
+        if(!camera->Open()) 
+        { 
+                printf("TestClass: camera failed to open.\n"); 
+                return -2; 
+        } 
+	
+
+//	TestClass feed = TestClass();
+	TestClass feed;
+//	TestClass feed();
 	feed.testCall();
 //	bool success = feed.testWindow();
 

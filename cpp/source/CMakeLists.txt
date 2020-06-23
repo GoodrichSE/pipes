@@ -14,7 +14,7 @@ find_package(jetson-inference)
 find_package(CUDA)
 
 #cuda_add_executable(pipes boilerplate.cpp)
-add_executable(pipes pipes.cpp Camfeed.cpp)
+add_executable(pipes pipes.cpp TestClass.cpp)
 
 target_link_libraries(pipes jetson-inference jetson-utils)
 #target_link_libraries(pipes jetson-inference jetson-utils/commandLine.h)
