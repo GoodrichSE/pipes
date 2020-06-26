@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(pipes) 
 
 # link to linux libraries, SDK libraries, packages
-include_directories(/usr/include/gstreamer-1.0 /usr/lib/aarch64-linux-gnu/gstreamer-1.0/include/usr/local/lib/ /usr/local/include/jetson-utils /usr/local/cuda-10.0/targets/aarch64-linux/include/ /usr/include/glib-2.0 /usr/include/libxml2 /usr/lib/aarch64-linux-gnu/glib-2.0/include/)
+include_directories(/usr/include/gstreamer-1.0 /usr/lib/aarch64-linux-gnu/gstreamer-1.0/include/usr/local/lib/ /usr/local/include/jetson-utils /usr/local/include/jetson-inference /usr/local/cuda-10.0/targets/aarch64-linux/include/ /usr/include/glib-2.0 /usr/include/libxml2 /usr/lib/aarch64-linux-gnu/glib-2.0/include/)
 
 #message("Search path: ${CMAKE_LIBRARY_PATH}")
 #message("Prefix path: ${CMAKE_PREFIX_PATH}")

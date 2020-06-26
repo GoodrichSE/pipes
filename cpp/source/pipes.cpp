@@ -1,10 +1,14 @@
+// C/++ libraries
 #include<iostream>
 #include<signal.h>
 
+// nVidia shared libraries
 #include<commandLine.h>
 #include<gstCamera.h>
 #include<glDisplay.h>
+#include<imageNet.h>
 
+// Libraries built by this package
 #include"TestClass.h"
 
 using namespace std;
@@ -33,6 +37,7 @@ int usage(){
 	printf("	--camera 	CAMERA	e.g. for VL42 cameras, the /dev/video device to use.\n");
 	printf("	--width		INT	Width of stream (default 1280).\n");
 	printf("	--height	INT	Height of stream (default 720).\n");
+	printf("%s\n", imageNet::Usage());
 	return 0;
 }
 
@@ -48,10 +53,18 @@ int main(int argc, char** argv){
 	if(signal(SIGINT, signal_handler) == SIG_ERR)
 		printf("\nSignal handler error.\n");
 
-	char* nptr = 0;
-
 	// Testing
-	printf("entering main\n");
+	//printf("entering main\n");
+	printf("argc: %i\nargv: %s\n", argc, *argv);
+
+	// Create classification network
+	imageNet* imgNet = imageNet::Create(argc, argv);
+
+	if(!imgNet)
+	{
+		printf("Pipes: failed to initialize imageNet\n");
+		return -1;
+	}
 
 	// Create camera object
         gstCamera* camera = gstCamera::Create(
@@ -90,7 +103,12 @@ int main(int argc, char** argv){
 		// Capture image
 		if(!camera->CaptureRGBA(&imgRGBA, 1000))
 			printf("\nPipes: lost RGBA frame\n");
+		
+		// This is const in the Jetson library. Why?
+		int img_class = imgNet->Classify(imgRGBA, camera->GetWidth(), camera->GetHeight());
 
+		if(img_class != NULL)
+			printf("Pipes: Classified image as %s.\n", imgNet->GetClassDesc(img_class));
 		// Update display
 		if(display != NULL)
 		{
