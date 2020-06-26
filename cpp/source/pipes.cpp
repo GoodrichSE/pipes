@@ -1,12 +1,25 @@
 #include<iostream>
-#include<jetson-utils/commandLine.h>
-#include<jetson-utils/gstCamera.h>
-#include<jetson-utils/glDisplay.h>
-//#include"boilerplate.h"
+#include<signal.h>
+
+#include<commandLine.h>
+#include<gstCamera.h>
+#include<glDisplay.h>
+
 #include"TestClass.h"
-//#include"start.h"
 
 using namespace std;
+
+bool signal_received = false; // User control flag
+
+// Signal handler for kill command from user
+void signal_handler(int signo)
+{
+	if( signo == SIGINT ) 
+	{
+		printf("\nreceived SIGINT\n");
+		signal_received = true;
+	}
+}
 
 int usage(){
 
@@ -20,7 +33,6 @@ int usage(){
 	printf("	--camera 	CAMERA	e.g. for VL42 cameras, the /dev/video device to use.\n");
 	printf("	--width		INT	Width of stream (default 1280).\n");
 	printf("	--height	INT	Height of stream (default 720).\n");
-	printf("");
 	return 0;
 }
 
@@ -28,8 +40,13 @@ int main(int argc, char** argv){
 
 	commandLine cmdl(argc, argv);
 
+	// Capture user command line args
 	if (cmdl.GetFlag("help")) 
 		return usage();
+
+	// Attach handler for user input signal
+	if(signal(SIGINT, signal_handler) == SIG_ERR)
+		printf("\nSignal handler error.\n");
 
 	char* nptr = 0;
 
@@ -63,6 +80,29 @@ int main(int argc, char** argv){
                 printf("Pipes: camera failed to open.\n"); 
                 return -2; 
         } 
+
+	// Continuously capture camera feed
+	while(!signal_received)
+	{
+
+		float* imgRGBA;
+
+		// Capture image
+		if(!camera->CaptureRGBA(&imgRGBA, 1000))
+			printf("\nPipes: lost RGBA frame\n");
+
+		// Update display
+		if(display != NULL)
+		{
+			// Using nVidia's glDisplay object
+			display->RenderOnce( (float*)imgRGBA, camera->GetWidth(), camera->GetHeight() );
+
+			// Check for user break signal
+			if(display->IsClosed())
+				signal_received = true;
+		}
+	}
+
 
 //	TestClass feed;
 //	feed.testCall();
