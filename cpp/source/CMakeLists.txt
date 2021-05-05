@@ -21,14 +21,21 @@ find_package(CUDA)
 # link to jetson libraries
 #include_directories(/usr/local/include/jetson-utils /usr/local/lib)
 
+message("Project source dir: ${PROJECT_SOURCE_DIR}")
+message("Cmake source dir: ${CMAKE_SOURCE_DIR}")
+
+# link to project libraries
+include_directories(${PROJECT_SOURCE_DIR}/lib)
+
 add_library(
 	test-lib SHARED
-	TestClass.h
-	TestClass.cpp
+	${PROJECT_SOURCE_DIR}/../lib/TestClass.h
+	${PROJECT_SOURCE_DIR}/../lib/TestClass.cpp
 	)
 
 #cuda_add_executable(pipes boilerplate.cpp)
-add_executable(pipes pipes.cpp)
+cuda_add_executable(pipes pipes.cpp)
+#add_executable(pipes pipes.cpp)
 
 target_link_libraries(pipes jetson-inference jetson-utils test-lib)
 #target_link_libraries(pipes jetson-inference jetson-utils/commandLine.h)
