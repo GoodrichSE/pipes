@@ -35,8 +35,10 @@ add_library(
 
 #cuda_add_executable(pipes boilerplate.cpp)
 cuda_add_executable(pipes pipes.cpp)
+cuda_add_executable(boxes bounding_boxes.cpp)
 #add_executable(pipes pipes.cpp)
 
 target_link_libraries(pipes jetson-inference jetson-utils test-lib)
+target_link_libraries(boxes jetson-inference jetson-utils)
 #target_link_libraries(pipes jetson-inference jetson-utils/commandLine.h)
 

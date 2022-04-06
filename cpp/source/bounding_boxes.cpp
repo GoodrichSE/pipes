@@ -1,9 +1,6 @@
 /*
-This will continuously stream detected objects. It will not open a window but will occupy the camera.
-
-Out: String array of detected objects and their confidence, repeatedly sent to stdout
+Displays detected objects with bounding boxes and some other aspects on an openGL window.
 */
-
 
 // C/++ libraries
 #include<iostream>
@@ -13,7 +10,7 @@ Out: String array of detected objects and their confidence, repeatedly sent to s
 #include<commandLine.h>
 #include<gstCamera.h>
 #include<glDisplay.h>
-#include<imageNet.h>
+#include<detectNet.h>
 
 // Libraries built by this package
 #include"../lib/TestClass.h"
@@ -44,6 +41,7 @@ int usage(){
 	printf("	--camera 	CAMERA	e.g. for VL42 cameras, the /dev/video device to use.\n");
 	printf("	--width		INT	Width of stream (default 1280).\n");
 	printf("	--height	INT	Height of stream (default 720).\n");
+
 	printf("%s\n", detectNet::Usage());
 	return 0;
 }
@@ -61,18 +59,19 @@ int main(int argc, char** argv){
 		printf("\nSignal handler error.\n");
 
 	// Testing
-	printf("entering stream_objects main\n");
+	//printf("entering main\n");
 	printf("argc: %i\nargv: %s\n", argc, *argv);
 
 	// Create classification network
-	// TODO: Make sure this CLI args create will work for detectNets here
 	detectNet* detNet = detectNet::Create(argc, argv);
 
 	if(!detNet)
 	{
-		printf("Pipes: failed to initialize detectNet\n");
+		printf("Pipes: failed to initialize imageNet\n");
 		return -1;
 	}
+
+	const uint32_t overlayFlags = detectNet::OverlayFlagsFromStr(cmdl.GetString("overlay", "box,label,conf"));
 
 	// Create camera object
         gstCamera* camera = gstCamera::Create(
@@ -91,6 +90,9 @@ int main(int argc, char** argv){
         printf("    width:  %u\n", camera->GetWidth()); 
         printf("   height:  %u\n", camera->GetHeight()); 
         printf("    depth:  %u (bpp)\n\n", camera->GetPixelDepth()); 
+ 
+	// Create display window
+	glDisplay* display = glDisplay::Create();
 
 	// Open camera
         if(!camera->Open()) 
@@ -103,26 +105,48 @@ int main(int argc, char** argv){
 	while(!signal_received)
 	{
 
-		float* imgRGBA;
+		float* imgRGBA = NULL;
+		detectNet::Detection* det = NULL;
+		float* center_x = NULL;
+		float* center_y = NULL;
 
 		// Capture image
 		if(!camera->CaptureRGBA(&imgRGBA, 1000))
 			printf("\nPipes: lost RGBA frame\n");
-
-		// TODO: Maybe allocate storage vector for detections. If so, use GetMaxDetections
 		
-		// This is const in the Jetson library. Why?
-		// TODO: Fix signature. Detections might be pointer passed in, or an empty list. Can accept Detection** or Detection*
-		// TODO: Check if this has any return value. Might just use Detections storage 
-		int img_classes = detNet->Detect(imgRGBA, camera->GetWidth(), camera->GetHeight(), detNet->getDetections(), detectNet.OVERLAY_NONE);
+		// TODO: Learn more about the overload that uses Detection**
+		const uint32_t obj = detNet->Detect( imgRGBA, camera->GetWidth(), camera->GetHeight(), det, overlayFlags );
 
-		// detNet->sortDetections
-		if(img_classes != NULL)
-			printf("Pipes: Number of classified objects is %s.\n", detNet->GetNumClasses());
-		if(img_classes != NULL)
+		// TODO: Retrieve error message from error code
+		if( obj < 0)
 		{
-			// TODO: loop over objects with GetClassDesc for i<GetNumClasses. Or, there's probably something internal to do the same. mClassDesc?
-			// printf("Pipes: Object detected as %s.\n", detNet->
+			printf("Pipes: Error detecting object. %i", obj);
+			return -3;
+		}
+
+		if(obj > 0)
+		{
+			printf("Pipes: Detected object as %s.\n", detNet->GetClassDesc(obj));
+			det->Center(center_x,center_y);
+			printf("Bounding box features: \nCenter (%f, %f) \nLeft %f \nRight %f \nTop %f \nBottom %f",
+				center_x,center_y,
+				det->Left,
+				det->Right,
+				det->Top,
+				det->Bottom );
+	
+		}
+		// Update display
+		if(display != NULL)
+		{
+			
+
+			// Using nVidia's glDisplay object
+			display->RenderOnce( (float*)imgRGBA, camera->GetWidth(), camera->GetHeight() );
+
+			// Check for user break signal
+			if(display->IsClosed())
+				signal_received = true;
 		}
 	}
 
@@ -131,6 +155,7 @@ int main(int argc, char** argv){
 //	feed.testCall();
 
 	SAFE_DELETE(camera);
+	SAFE_DELETE(display);
 
 	return 0;
 }
